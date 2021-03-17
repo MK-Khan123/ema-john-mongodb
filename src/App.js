@@ -10,34 +10,49 @@ import Review from './components/Review/Review';
 import Inventory from './components/Inventory/Inventory';
 import NotFound from './components/NotFound/NotFound';
 import ProductDetail from './components/ProductDetail/ProductDetail';
+import Shipment from './components/Shipment/Shipment';
+import Login from './components/Login/Login';
+import { createContext, useState } from 'react';
+import PrivateRoute from './components/PrivateRoute/PrivateRoute';
+
+export const UserContext = createContext();
 
 function App() {
+  const [loggedInUser, setLoggedInUser] = useState({}); //This state is used to store logged in User Data.
   return (
-    <div>
-      <Header></Header>
+    <UserContext.Provider value={[loggedInUser, setLoggedInUser]}>
+      <h3>Logged In Email: {loggedInUser.email}</h3>
+
       <Router>
+        <Header />
         <Switch>
           <Route path='/shop'>
-            <Shop></Shop>
+            <Shop />
           </Route>
           <Route path='/review'>
-            <Review></Review>
+            <Review />
           </Route>
-          <Route path='/inventory'>
-            <Inventory></Inventory>
+          <PrivateRoute path='/inventory'>
+            <Inventory />
+          </PrivateRoute>
+          <PrivateRoute path='/shipment'>
+            <Shipment />
+          </PrivateRoute>
+          <Route path='/login'>
+            <Login />
           </Route>
           <Route exact path='/'>
-            <Shop></Shop>
+            <Shop />
           </Route>
           <Route path='/product/:productKey'>
-            <ProductDetail></ProductDetail>
+            <ProductDetail />
           </Route>
           <Route path='*'>
-            <NotFound></NotFound>
+            <NotFound />
           </Route>
         </Switch>
       </Router>
-    </div>
+    </UserContext.Provider>
   );
 }
 
