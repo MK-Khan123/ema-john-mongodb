@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import fakeData from '../../fakeData';
 import { getDatabaseCart, removeFromDatabaseCart } from '../../utilities/databaseManager';
 import Cart from '../Cart/Cart';
 import ReviewItem from '../ReviewItem/ReviewItem';
@@ -17,22 +16,20 @@ const Review = () => {
 
     const removeProduct = productKey => {
         const newCart = cart.filter(pd => pd.key !== productKey);
-        // console.log(newCart);
         setCart(newCart);
         removeFromDatabaseCart(productKey); //To remove from local storage.
     }
     useEffect(() => {
         const savedCart = getDatabaseCart();
-        // console.log(savedCart);
         const productKeys = Object.keys(savedCart);
-        // console.log(productKeys);
-        const cartProducts = productKeys.map(key => {
-            const product = fakeData.find(pd => pd.key === key);
-            product.quantity = savedCart[key];
-            return product;
-        });
-        // console.log(cartProducts);
-        setCart(cartProducts);
+        
+        fetch('https://floating-cove-45088.herokuapp.com/productByKeys', {
+            method: 'POST',
+            headers: { 'Content-type': 'application/json' },
+            body: JSON.stringify(productKeys)
+        })
+            .then(res => res.json())
+            .then(data => setCart(data));
     }, []);
 
     let thankYou;

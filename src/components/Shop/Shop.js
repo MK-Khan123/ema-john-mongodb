@@ -1,26 +1,33 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import fakeData from '../../fakeData';
 import { addToDatabaseCart, getDatabaseCart } from '../../utilities/databaseManager';
 import Cart from '../Cart/Cart';
 import Product from '../Product/Product';
 import './Shop.css';
 
 const Shop = () => {
-    const first10 = fakeData.slice(0, 10);
-    const [products] = useState(first10);
+    const [products, setProducts] = useState([]);
     const [cart, setCart] = useState([]);
+
+    //This useEffect() is used to load data from mongodb database
+    useEffect(() => {
+        fetch('https://floating-cove-45088.herokuapp.com/products')
+            .then(res => res.json())
+            .then(data => setProducts(data));
+    }, []);
 
     //Same like Review.js
     useEffect(() => {
         const savedCart = getDatabaseCart();
         const productKeys = Object.keys(savedCart);
-        const previousCart = productKeys.map(existingKey => {
-            const product = fakeData.find(pd => pd.key === existingKey);
-            product.quantity = savedCart[existingKey];
-            return product;
+        
+        fetch('https://floating-cove-45088.herokuapp.com/productByKeys', {
+            method: 'POST',
+            headers: { 'Content-type': 'application/json' },
+            body: JSON.stringify(productKeys)
         })
-        setCart(previousCart);
+            .then(res => res.json())
+            .then(data => setCart(data));
     }, []);
 
     const handleAddProduct = (product) => {

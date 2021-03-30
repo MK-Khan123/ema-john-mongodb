@@ -9,7 +9,7 @@ const Cart = (props) => {
         return Number(precision);
     }
     
-    const total = cart.reduce((total, prd) => formatNumber(total + prd.price * prd.quantity), 0);
+    const total = cart.reduce((total, prd) => formatNumber(total + prd.price * 1), 0); //prd.quantity should replace 1
 
     let shipping = 0;
     if (total > 35) {
